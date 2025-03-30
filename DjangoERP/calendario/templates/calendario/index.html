@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Calendario{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Calendario</h1>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Ver Calendario
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Visualice su calendario completo con todos los eventos.</p>
+                    <a href="{% url 'calendario:vista_mensual' %}" class="btn btn-primary">Vista Mensual</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Eventos
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Administre sus eventos y recordatorios.</p>
+                    <a href="{% url 'calendario:eventos' %}" class="btn btn-primary">Ver Eventos</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Sincronización
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Sincronice con otros calendarios (Google, Outlook).</p>
+                    <a href="{% url 'calendario:sincronizacion' %}" class="btn btn-primary">Configurar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

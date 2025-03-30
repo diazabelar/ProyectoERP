@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if form.instance.id %}Editar Proveedor{% else %}Nuevo Proveedor{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h4>{% if form.instance.id %}Editar Proveedor{% else %}Nuevo Proveedor{% endif %}</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.nombre.id_for_label }}">Nombre:</label>
+                            {{ form.nombre }}
+                            {% if form.nombre.errors %}
+                                <div class="text-danger">{{ form.nombre.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.rfc.id_for_label }}">RFC:</label>
+                            {{ form.rfc }}
+                            {% if form.rfc.errors %}
+                                <div class="text-danger">{{ form.rfc.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.telefono.id_for_label }}">Teléfono:</label>
+                            {{ form.telefono }}
+                            {% if form.telefono.errors %}
+                                <div class="text-danger">{{ form.telefono.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="form-group">
+                            <label for="{{ form.email.id_for_label }}">Email:</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="{{ form.direccion.id_for_label }}">Dirección:</label>
+                    {{ form.direccion }}
+                    {% if form.direccion.errors %}
+                        <div class="text-danger">{{ form.direccion.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="{{ form.notas.id_for_label }}">Notas:</label>
+                    {{ form.notas }}
+                    {% if form.notas.errors %}
+                        <div class="text-danger">{{ form.notas.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'compras:proveedores' %}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">{{ title }}</h1>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Plan Contable
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Gestione el plan de cuentas contables.</p>
+                    <a href="{% url 'contabilidad:cuentas_list' %}" class="btn btn-primary">Administrar</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Asientos Contables
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Registre y consulte asientos contables.</p>
+                    <a href="{% url 'contabilidad:asientos_list' %}" class="btn btn-primary">Administrar</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Informes
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Genere informes financieros y balances.</p>
+                    <a href="#" class="btn btn-primary">Ver Informes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

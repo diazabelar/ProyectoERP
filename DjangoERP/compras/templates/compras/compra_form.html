@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4>{{ title }}</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="row">
+                    <!-- Proveedor field -->
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.proveedor.id_for_label }}">Proveedor:</label>
+                        {{ form.proveedor }}
+                        {% if form.proveedor.errors %}
+                            <div class="text-danger">
+                                {{ form.proveedor.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Fecha field -->
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.fecha.id_for_label }}">Fecha:</label>
+                        {{ form.fecha }}
+                        {% if form.fecha.errors %}
+                            <div class="text-danger">
+                                {{ form.fecha.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <!-- Numero field -->
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.numero.id_for_label }}">Número:</label>
+                        {{ form.numero }}
+                        {% if form.numero.errors %}
+                            <div class="text-danger">
+                                {{ form.numero.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Estado field -->
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.estado.id_for_label }}">Estado:</label>
+                        {{ form.estado }}
+                        {% if form.estado.errors %}
+                            <div class="text-danger">
+                                {{ form.estado.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Notas field -->
+                <div class="mb-3">
+                    <label for="{{ form.notas.id_for_label }}">Notas:</label>
+                    {{ form.notas }}
+                    {% if form.notas.errors %}
+                        <div class="text-danger">
+                            {{ form.notas.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Additional fields can be added based on your Compra model -->
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        {% if is_edit %}Actualizar{% else %}Crear{% endif %}
+                    </button>
+                    <a href="{% url 'compras:compras' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    {% if is_edit and compra %}
+    <div class="card mt-4">
+        <div class="card-header bg-info text-white">
+            <h5>Líneas de Compra</h5>
+        </div>
+        <div class="card-body">
+            <!-- This section would include a form or table for managing purchase order lines -->
+            <p>Aquí se mostrarían los productos de la orden de compra.</p>
+            
+            <!-- Example of what might be included: -->
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if compra.lineacompra_set.all %}
+                        {% for linea in compra.lineacompra_set.all %}
+                        <tr>
+                            <td>{{ linea.producto.nombre }}</td>
+                            <td>{{ linea.cantidad }}</td>
+                            <td>{{ linea.precio_unitario }}</td>
+                            <td>{{ linea.subtotal }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning">Editar</button>
+                                <button class="btn btn-sm btn-danger">Eliminar</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center">No hay productos en esta orden</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            
+            <button class="btn btn-success">
+                <i class="fas fa-plus"></i> Añadir Producto
+            </button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

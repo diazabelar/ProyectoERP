@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Productos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Gestión de Productos</h1>
+    
+    <div class="row mt-4">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-boxes fa-3x mb-3 text-primary"></i>
+                    <h4 class="card-title">Catálogo de Productos</h4>
+                    <p class="card-text">Gestiona tu catálogo de productos y sus especificaciones.</p>
+                    <a href="{% url 'productos:lista_productos' %}" class="btn btn-primary">Acceder</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-tags fa-3x mb-3 text-primary"></i>
+                    <h4 class="card-title">Categorías</h4>
+                    <p class="card-text">Organiza tus productos en categorías y subcategorías.</p>
+                    <a href="{% url 'productos:lista_productos' %}" class="btn btn-primary">Acceder</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-warehouse fa-3x mb-3 text-primary"></i>
+                    <h4 class="card-title">Inventario</h4>
+                    <p class="card-text">Gestiona el stock de tus productos y sus movimientos.</p>
+                    <a href="{% url 'productos:lista_productos' %}" class="btn btn-primary">Acceder</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

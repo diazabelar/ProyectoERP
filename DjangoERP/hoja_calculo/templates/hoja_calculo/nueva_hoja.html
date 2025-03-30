@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Nueva Hoja de Cálculo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Crear Nueva Hoja de Cálculo</h1>
+    
+    <div class="card">
+        <div class="card-header">
+            Información de la Hoja
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="descripcion" class="form-label">Descripción</label>
+                    <textarea class="form-control" id="descripcion" name="descripcion" rows="3"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="tipo" class="form-label">Tipo de Hoja</label>
+                    <select class="form-select" id="tipo" name="tipo">
+                        <option value="general">General</option>
+                        <option value="finanzas">Finanzas</option>
+                        <option value="inventario">Inventario</option>
+                        <option value="ventas">Ventas</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Crear Hoja</button>
+                <a href="{% url 'hoja_calculo:index' %}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "compras/base.html" %}
+
+{% block compras_content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4>Órdenes de Compra</h4>
+        <a href="{% url 'compras:orden_create' %}" class="btn btn-primary">Nueva Orden</a>
+    </div>
+    <div class="card-body">
+        {% if ordenes %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Número</th>
+                    <th>Fecha</th>
+                    <th>Proveedor</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for orden in ordenes %}
+                <tr>
+                    <td>{{ orden.numero }}</td>
+                    <td>{{ orden.fecha|date:"d/m/Y" }}</td>
+                    <td>{{ orden.proveedor.nombre }}</td>
+                    <td>${{ orden.total|floatformat:2 }}</td>
+                    <td>
+                        <span class="badge {% if orden.estado == 'Pendiente' %}bg-warning{% elif orden.estado == 'Aprobada' %}bg-success{% elif orden.estado == 'Recibida' %}bg-info{% elif orden.estado == 'Cancelada' %}bg-danger{% endif %}">
+                            {{ orden.estado }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'compras:orden_detail' orden.id %}" class="btn btn-sm btn-info">Ver</a>
+                        <a href="{% url 'compras:orden_edit' orden.id %}" class="btn btn-sm btn-warning">Editar</a>
+                        <a href="{% url 'compras:orden_delete' orden.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info">No hay órdenes de compra registradas.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

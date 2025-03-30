@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card mt-4">
+          <div class="card-header text-center">
+            <h2>{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Asiento Contable</h2>
+          </div>
+          <div class="card-body">
+            <form method="post" id="asientoForm">
+              {% csrf_token %}
+              
+              <div class="form-group mb-3">
+                <label for="id_fecha">Fecha:</label>
+                <input type="date" name="fecha" class="form-control" id="id_fecha" required>
+              </div>
+              
+              <div class="form-group mb-3">
+                <label for="id_concepto">Concepto:</label>
+                <input type="text" name="concepto" class="form-control" id="id_concepto" required>
+              </div>
+              
+              <h4 class="mt-4">Líneas del Asiento</h4>
+              <div id="lineasContainer">
+                <div class="linea-asiento card mb-3 p-3">
+                  <div class="row">
+                    <div class="col-md-5">
+                      <div class="form-group">
+                        <label>Cuenta:</label>
+                        <select name="cuenta[]" class="form-control" required>
+                          <option value="">Seleccione una cuenta</option>
+                          <!-- Aquí irían las opciones de cuentas -->
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label>Debe:</label>
+                        <input type="number" name="debe[]" step="0.01" class="form-control debe" value="0.00">
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label>Haber:</label>
+                        <input type="number" name="haber[]" step="0.01" class="form-control haber" value="0.00">
+                      </div>
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                      <button type="button" class="btn btn-danger btn-sm eliminar-linea">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="text-center mb-3">
+                <button type="button" id="agregarLinea" class="btn btn-info">
+                  <i class="fas fa-plus"></i> Agregar Línea
+                </button>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6 offset-md-6">
+                  <div class="card bg-light">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-6 text-right">
+                          <strong>Total Debe:</strong>
+                        </div>
+                        <div class="col-6" id="totalDebe">
+                          0.00 €
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-6 text-right">
+                          <strong>Total Haber:</strong>
+                        </div>
+                        <div class="col-6" id="totalHaber">
+                          0.00 €
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-6 text-right">
+                          <strong>Diferencia:</strong>
+                        </div>
+                        <div class="col-6" id="diferencia">
+                          0.00 €
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary">Guardar Asiento</button>
+                <a href="{% url 'contabilidad:asientos_list' %}" class="btn btn-secondary">Cancelar</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Template para nuevas líneas de asiento -->
+  <template id="lineaTemplate">
+    <div class="linea-asiento card mb-3 p-3">
+      <div class="row">
+        <div class="col-md-5">
+          <div class="form-group">
+            <label>Cuenta:</label>
+            <select name="cuenta[]" class="form-control" required>
+              <option value="">Seleccione una cuenta</option>
+              <!-- Aquí irían las opciones de cuentas -->
+            </select>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Debe:</label>
+            <input type="number" name="debe[]" step="0.01" class="form-control debe" value="0.00">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Haber:</label>
+            <input type="number" name="haber[]" step="0.01" class="form-control haber" value="0.00">
+          </div>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+          <button type="button" class="btn btn-danger btn-sm eliminar-linea">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
+  
+  {% block extra_js %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Agregar línea
+      document.getElementById('agregarLinea').addEventListener('click', function() {
+        const template = document.getElementById('lineaTemplate');
+        const clone = template.content.cloneNode(true);
+        document.getElementById('lineasContainer').appendChild(clone);
+        actualizarTotales();
+        configurarEventos();
+      });
+      
+      function configurarEventos() {
+        // Configurar botones de eliminar
+        document.querySelectorAll('.eliminar-linea').forEach(button => {
+          button.addEventListener('click', function() {
+            this.closest('.linea-asiento').remove();
+            actualizarTotales();
+          });
+        });
+        
+        // Actualizar totales cuando cambian los valores
+        document.querySelectorAll('.debe, .haber').forEach(input => {
+          input.addEventListener('input', actualizarTotales);
+        });
+      }
+      
+      function actualizarTotales() {
+        let totalDebe = 0;
+        let totalHaber = 0;
+        
+        document.querySelectorAll('.debe').forEach(input => {
+          totalDebe += parseFloat(input.value) || 0;
+        });
+        
+        document.querySelectorAll('.haber').forEach(input => {
+          totalHaber += parseFloat(input.value) || 0;
+        });
+        
+        const diferencia = totalDebe - totalHaber;
+        
+        document.getElementById('totalDebe').textContent = totalDebe.toFixed(2) + ' €';
+        document.getElementById('totalHaber').textContent = totalHaber.toFixed(2) + ' €';
+        document.getElementById('diferencia').textContent = diferencia.toFixed(2) + ' €';
+        
+        // Colorear la diferencia
+        const diferenciaElement = document.getElementById('diferencia');
+        if (diferencia === 0) {
+          diferenciaElement.style.color = 'green';
+        } else {
+          diferenciaElement.style.color = 'red';
+        }
+      }
+      
+      // Configurar eventos iniciales
+      configurarEventos();
+      
+      // Agregar al menos una línea si no hay ninguna
+      if (document.querySelectorAll('.linea-asiento').length === 0) {
+        document.getElementById('agregarLinea').click();
+      }
+    });
+  </script>
+  {% endblock %}
+{% endblock %}

@@ -1,0 +1,10 @@
+# Versiones específicas para evitar problemas de compatibilidad
+Django==4.2.7
+mysqlclient==2.2.0
+djangorestframework==3.14.0
+django-crispy-forms==2.0
+crispy-bootstrap5==0.7
+Pillow==10.1.0
+celery==5.3.4
+django-simple-history==3.4.0
+django-import-export==3.3.1

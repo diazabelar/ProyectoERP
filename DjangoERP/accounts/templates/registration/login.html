@@ -1,0 +1,15 @@
+<form method="post">
+    {% csrf_token %}
+    {# A more "HTML-y" way of displaying the login form. #}
+    <ul>
+    {% for field in form %}
+        <li>
+            {{ field.errors }}
+            <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+            {{ field }}
+        </li>
+    {% endfor %}
+    </ul>
+    <input type="submit" value="login">
+    <input type="hidden" name="next" value="{{ next }}">
+</form>

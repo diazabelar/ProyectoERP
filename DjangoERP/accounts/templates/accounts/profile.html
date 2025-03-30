@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">User Profile</h3>
+                </div>
+                <div class="card-body">
+                    <div class="profile-info mb-4">
+                        <h4 class="text-primary mb-3">Welcome, {{ user.username }}!</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="text-muted small">Email</label>
+                                    <p class="mb-1">{{ user.email }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="text-muted small">Username</label>
+                                    <p class="mb-1">{{ user.username }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="text-muted small">Last Login</label>
+                                    <p class="mb-1">{{ user.last_login|date:"F d, Y H:i" }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="text-muted small">Date Joined</label>
+                                    <p class="mb-1">{{ user.date_joined|date:"F d, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'password_change' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-key me-2"></i>Change Password
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

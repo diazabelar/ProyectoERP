@@ -1,0 +1,177 @@
+{% extends "compras/base.html" %}
+{% load static %}
+
+{% block compras_content %}
+<div class="card">
+    <div class="card-header">
+        <h4>{% if object %}Editar{% else %}Nueva{% endif %} Orden de Compra</h4>
+    </div>
+    <div class="card-body">
+        <form method="post" id="ordenForm">
+            {% csrf_token %}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.numero.id_for_label }}">Número:</label>
+                        {{ form.numero|addclass:"form-control" }}
+                        {% if form.numero.errors %}
+                        <div class="text-danger">{{ form.numero.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.fecha.id_for_label }}">Fecha:</label>
+                        {{ form.fecha|addclass:"form-control" }}
+                        {% if form.fecha.errors %}
+                        <div class="text-danger">{{ form.fecha.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label for="{{ form.proveedor.id_for_label }}">Proveedor:</label>
+                {{ form.proveedor|addclass:"form-control" }}
+                {% if form.proveedor.errors %}
+                <div class="text-danger">{{ form.proveedor.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group mb-3">
+                <label for="{{ form.estado.id_for_label }}">Estado:</label>
+                {{ form.estado|addclass:"form-control" }}
+                {% if form.estado.errors %}
+                <div class="text-danger">{{ form.estado.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group mb-3">
+                <label for="{{ form.observaciones.id_for_label }}">Observaciones:</label>
+                {{ form.observaciones|addclass:"form-control" }}
+                {% if form.observaciones.errors %}
+                <div class="text-danger">{{ form.observaciones.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <h5 class="mt-4 mb-3">Detalle de Productos</h5>
+            <div id="productos-container">
+                {{ formset.management_form }}
+                <table class="table table-bordered" id="productos-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario</th>
+                            <th>Subtotal</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form_producto in formset %}
+                        <tr class="producto-formset-row">
+                            <td>
+                                {{ form_producto.id }}
+                                {{ form_producto.producto|addclass:"form-control producto-select" }}
+                                {% if form_producto.producto.errors %}
+                                <div class="text-danger">{{ form_producto.producto.errors }}</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ form_producto.cantidad|addclass:"form-control cantidad-input" }}
+                                {% if form_producto.cantidad.errors %}
+                                <div class="text-danger">{{ form_producto.cantidad.errors }}</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ form_producto.precio_unitario|addclass:"form-control precio-input" }}
+                                {% if form_producto.precio_unitario.errors %}
+                                <div class="text-danger">{{ form_producto.precio_unitario.errors }}</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="subtotal">0.00</span>
+                            </td>
+                            <td>
+                                {% if forloop.first %}
+                                <button type="button" class="btn btn-success btn-sm add-producto">+</button>
+                                {% else %}
+                                <button type="button" class="btn btn-danger btn-sm remove-producto">-</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3" class="text-end">Total:</th>
+                            <th><span id="total">0.00</span></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="{% url 'compras:ordenes_list' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% block extrajs %}
+<script src="{% static 'js/formset_handlers.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        // Calculate subtotals and totals
+        function calculateSubtotal(row) {
+            var cantidad = parseFloat($(row).find('.cantidad-input').val()) || 0;
+            var precio = parseFloat($(row).find('.precio-input').val()) || 0;
+            var subtotal = cantidad * precio;
+            $(row).find('.subtotal').text(subtotal.toFixed(2));
+            return subtotal;
+        }
+        
+        function calculateTotal() {
+            var total = 0;
+            $('.producto-formset-row').each(function() {
+                total += calculateSubtotal(this);
+            });
+            $('#total').text(total.toFixed(2));
+        }
+        
+        $(document).on('change', '.cantidad-input, .precio-input', function() {
+            calculateTotal();
+        });
+        
+        // Add product row
+        $('.add-producto').click(function() {
+            var formCount = parseInt($('#id_ordendetalle_set-TOTAL_FORMS').val());
+            var row = $('.producto-formset-row:first').clone(true);
+            
+            row.find('input, select').each(function() {
+                var name = $(this).attr('name').replace('-0-', '-' + formCount + '-');
+                var id = 'id_' + name;
+                $(this).attr({'name': name, 'id': id}).val('');
+            });
+            
+            row.find('.add-producto').removeClass('add-producto btn-success').addClass('remove-producto btn-danger').text('-');
+            
+            $('#productos-table tbody').append(row);
+            $('#id_ordendetalle_set-TOTAL_FORMS').val(formCount + 1);
+            calculateTotal();
+        });
+        
+        // Remove product row
+        $(document).on('click', '.remove-producto', function() {
+            $(this).closest('tr').remove();
+            calculateTotal();
+        });
+        
+        // Initial calculation
+        calculateTotal();
+    });
+</script>
+{% endblock %}
+{% endblock %}

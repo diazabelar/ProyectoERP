@@ -1,0 +1,71 @@
+{% extends "compras/base.html" %}
+
+{% block compras_content %}
+<div class="card">
+    <div class="card-header">
+        <h4>{% if object %}Editar{% else %}Nuevo{% endif %} Proveedor</h4>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group row mb-3">
+                <label for="{{ form.nombre.id_for_label }}" class="col-sm-2 col-form-label">Nombre:</label>
+                <div class="col-sm-10">
+                    {{ form.nombre|addclass:"form-control" }}
+                    {% if form.nombre.errors %}
+                    <div class="text-danger">{{ form.nombre.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-group row mb-3">
+                <label for="{{ form.ruc.id_for_label }}" class="col-sm-2 col-form-label">RUC/NIT:</label>
+                <div class="col-sm-10">
+                    {{ form.ruc|addclass:"form-control" }}
+                    {% if form.ruc.errors %}
+                    <div class="text-danger">{{ form.ruc.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-group row mb-3">
+                <label for="{{ form.direccion.id_for_label }}" class="col-sm-2 col-form-label">Dirección:</label>
+                <div class="col-sm-10">
+                    {{ form.direccion|addclass:"form-control" }}
+                    {% if form.direccion.errors %}
+                    <div class="text-danger">{{ form.direccion.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-group row mb-3">
+                <label for="{{ form.telefono.id_for_label }}" class="col-sm-2 col-form-label">Teléfono:</label>
+                <div class="col-sm-10">
+                    {{ form.telefono|addclass:"form-control" }}
+                    {% if form.telefono.errors %}
+                    <div class="text-danger">{{ form.telefono.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-group row mb-3">
+                <label for="{{ form.email.id_for_label }}" class="col-sm-2 col-form-label">Email:</label>
+                <div class="col-sm-10">
+                    {{ form.email|addclass:"form-control" }}
+                    {% if form.email.errors %}
+                    <div class="text-danger">{{ form.email.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <div class="col-sm-10 offset-sm-2">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a href="{% url 'compras:proveedores_list' %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

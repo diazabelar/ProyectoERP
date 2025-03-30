@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Facturas{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ titulo }}</h1>
+        <a href="{% url 'compras:index' %}" class="btn btn-secondary">Volver</a>
+    </div>
+    
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Listado de Facturas</h5>
+            
+            <div class="mb-3">
+                <a href="{% url 'compras:factura_create' %}" class="btn btn-success">Nueva Factura</a>
+            </div>
+            
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Proveedor</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="6" class="text-center">No hay facturas registradas</td>
+                    </tr>
+                    <!-- Aquí se listarán las facturas cuando haya datos -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

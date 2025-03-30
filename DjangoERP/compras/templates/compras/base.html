@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Sistema ERP - Módulo de Compras{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Módulo de Compras</h2>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="{% url 'compras:index' %}" class="list-group-item list-group-item-action">Dashboard</a>
+                <a href="{% url 'compras:proveedores_list' %}" class="list-group-item list-group-item-action">Proveedores</a>
+                <a href="{% url 'compras:ordenes_list' %}" class="list-group-item list-group-item-action">Órdenes de Compra</a>
+                <a href="{% url 'compras:facturas_list' %}" class="list-group-item list-group-item-action">Facturas</a>
+            </div>
+        </div>
+        <div class="col-md-9">
+            {% block compras_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

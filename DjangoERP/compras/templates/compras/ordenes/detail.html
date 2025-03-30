@@ -1,0 +1,114 @@
+{% extends "compras/base.html" %}
+
+{% block compras_content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4>Orden de Compra #{{ orden.numero }}</h4>
+        <div>
+            {% if orden.estado == 'Pendiente' %}
+            <a href="{% url 'compras:orden_aprobar' orden.id %}" class="btn btn-success">Aprobar</a>
+            {% endif %}
+            <a href="{% url 'compras:orden_edit' orden.id %}" class="btn btn-warning">Editar</a>
+            <a href="{% url 'compras:ordenes_list' %}" class="btn btn-secondary">Volver</a>
+            <a href="{% url 'compras:orden_pdf' orden.id %}" class="btn btn-primary" target="_blank">
+                <i class="bi bi-file-pdf"></i> PDF
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h5>Información de la Orden</h5>
+                <p><strong>Número:</strong> {{ orden.numero }}</p>
+                <p><strong>Fecha:</strong> {{ orden.fecha|date:"d/m/Y" }}</p>
+                <p><strong>Estado:</strong> 
+                    <span class="badge {% if orden.estado == 'Pendiente' %}bg-warning{% elif orden.estado == 'Aprobada' %}bg-success{% elif orden.estado == 'Recibida' %}bg-info{% elif orden.estado == 'Cancelada' %}bg-danger{% endif %}">
+                        {{ orden.estado }}
+                    </span>
+                </p>
+            </div>
+            <div class="col-md-6">
+                <h5>Información del Proveedor</h5>
+                <p><strong>Proveedor:</strong> {{ orden.proveedor.nombre }}</p>
+                <p><strong>RUC/NIT:</strong> {{ orden.proveedor.ruc }}</p>
+                <p><strong>Teléfono:</strong> {{ orden.proveedor.telefono }}</p>
+            </div>
+        </div>
+        
+        {% if orden.observaciones %}
+        <div class="mb-4">
+            <h5>Observaciones</h5>
+            <p>{{ orden.observaciones }}</p>
+        </div>
+        {% endif %}
+        
+        <h5>Detalle de Productos</h5>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for detalle in orden.ordendetalle_set.all %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ detalle.producto.nombre }}</td>
+                    <td>{{ detalle.cantidad }}</td>
+                    <td>${{ detalle.precio_unitario|floatformat:2 }}</td>
+                    <td>${{ detalle.subtotal|floatformat:2 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="4" class="text-end">Total:</th>
+                    <th>${{ orden.total|floatformat:2 }}</th>
+                </tr>
+            </tfoot>
+        </table>
+        
+        {% if orden.estado == 'Aprobada' %}
+        <div class="mt-4">
+            <a href="{% url 'compras:factura_crear_desde_orden' orden.id %}" class="btn btn-primary">Crear Factura</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5>Historial de la Orden</h5>
+    </div>
+    <div class="card-body">
+        {% if historial %}
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Acción</th>
+                    <th>Comentario</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in historial %}
+                <tr>
+                    <td>{{ item.fecha|date:"d/m/Y H:i" }}</td>
+                    <td>{{ item.usuario.username }}</td>
+                    <td>{{ item.accion }}</td>
+                    <td>{{ item.comentario }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info">No hay registros de historial para esta orden.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

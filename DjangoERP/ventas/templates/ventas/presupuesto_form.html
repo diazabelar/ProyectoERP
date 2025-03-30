@@ -1,0 +1,454 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'ventas:index' %}">Ventas</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'ventas:presupuestos' %}">Presupuestos</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h1>{{ title }}</h1>
+            {% if is_edit %}
+            <div>
+                <a href="{% url 'ventas:presupuesto_delete' pk=presupuesto.pk %}" class="btn btn-danger">
+                    <i class="fas fa-trash me-1"></i> Eliminar Presupuesto
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="row mb-3">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">PRESUPUESTO</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 border-end">
+                                <!-- Company Info - Placeholder for your company logo or info -->
+                                <div class="mb-3">
+                                    <h4>SU EMPRESA S.L.</h4>
+                                    <p class="mb-0">Calle Principal 123</p>
+                                    <p class="mb-0">28001 Madrid, España</p>
+                                    <p class="mb-0">CIF: B12345678</p>
+                                    <p class="mb-0">Tel: +34 91 123 45 67</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <!-- Presupuesto Info -->
+                                <div class="row mb-2">
+                                    <label class="col-sm-4 col-form-label fw-bold">Número:</label>
+                                    <div class="col-sm-8">
+                                        {{ form.numero }}
+                                        {% if form.numero.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.numero.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <label class="col-sm-4 col-form-label fw-bold">Fecha:</label>
+                                    <div class="col-sm-8">
+                                        {{ form.fecha }}
+                                        {% if form.fecha.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.fecha.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <label class="col-sm-4 col-form-label fw-bold">Estado:</label>
+                                    <div class="col-sm-8">
+                                        {{ form.estado }}
+                                        {% if form.estado.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.estado.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <label class="col-sm-4 col-form-label fw-bold">Forma de pago:</label>
+                                    <div class="col-sm-8">
+                                        {{ form.forma_pago }}
+                                        {% if form.forma_pago.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.forma_pago.errors }}
+                                        </div>
+                                    {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <!-- Cliente Info -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="mb-3">Información del Cliente</h5>
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.cliente.id_for_label }}" class="form-label fw-bold">Cliente:</label>
+                                    {{ form.cliente }}
+                                    {% if form.cliente.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.cliente.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <!-- Observaciones -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="{{ form.observaciones.id_for_label }}" class="form-label fw-bold">Observaciones:</label>
+                                    {{ form.observaciones }}
+                                    {% if form.observaciones.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.observaciones.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 text-end">
+                                <a href="{% url 'ventas:presupuestos' %}" class="btn btn-secondary me-2">Cancelar</a>
+                                <button type="submit" class="btn btn-primary">{% if is_edit %}Actualizar{% else %}Guardar{% endif %} presupuesto</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if is_edit %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                    <h5 class="mb-0">Detalle del Presupuesto</h5>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addLineModal">
+                        <i class="fas fa-plus me-1"></i> Añadir línea
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    {% if presupuesto.lineas.all %}
+                    <div class="table-responsive">
+                        <table class="table table-striped mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Descripción</th>
+                                    <th class="text-center">Cantidad</th>
+                                    <th class="text-end">Precio</th>
+                                    <th class="text-center">Descuento (%)</th>
+                                    <th class="text-end">Subtotal</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for linea in presupuesto.lineas.all %}
+                                <tr>
+                                    <td>{{ linea.producto.codigo }}</td>
+                                    <td>{{ linea.descripcion }}</td>
+                                    <td class="text-center">{{ linea.cantidad }}</td>
+                                    <td class="text-end">{{ linea.precio|floatformat:2 }} €</td>
+                                    <td class="text-center">{{ linea.descuento }}%</td>
+                                    <td class="text-end">{{ linea.subtotal|floatformat:2 }} €</td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-secondary edit-line" 
+                                                    data-id="{{ linea.id }}" 
+                                                    data-producto="{{ linea.producto.id }}" 
+                                                    data-descripcion="{{ linea.descripcion }}" 
+                                                    data-cantidad="{{ linea.cantidad }}" 
+                                                    data-precio="{{ linea.precio }}" 
+                                                    data-descuento="{{ linea.descuento }}">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <a href="#" class="btn btn-outline-danger delete-line" data-id="{{ linea.id }}">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th colspan="5" class="text-end">Subtotal:</th>
+                                    <th class="text-end">{{ presupuesto.subtotal|floatformat:2 }} €</th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="5" class="text-end">IVA (21%):</th>
+                                    <th class="text-end">{{ presupuesto.iva|floatformat:2 }} €</th>
+                                    <th></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="5" class="text-end">Total:</th>
+                                    <th class="text-end">{{ presupuesto.total|floatformat:2 }} €</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info m-3">
+                        No hay líneas en este presupuesto. Utilice el botón "Añadir línea" para agregar productos.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal para añadir/editar línea -->
+{% if is_edit %}
+<div class="modal fade" id="addLineModal" tabindex="-1" aria-labelledby="addLineModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addLineModalLabel">Añadir línea</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="lineForm" method="post" action="{% url 'ventas:presupuesto_add_line' pk=presupuesto.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="line_id" id="line_id" value="">
+                    
+                    <div class="mb-3">
+                        <label for="producto" class="form-label">Producto:</label>
+                        <select name="producto" id="producto" class="form-control" required>
+                            <option value="">-- Seleccione un producto --</option>
+                            <!-- Options would be populated dynamically -->
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción:</label>
+                        <textarea name="descripcion" id="descripcion" class="form-control" rows="2" required></textarea>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="cantidad" class="form-label">Cantidad:</label>
+                            <input type="number" name="cantidad" id="cantidad" class="form-control" min="1" value="1" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="precio" class="form-label">Precio:</label>
+                            <input type="number" name="precio" id="precio" class="form-control" min="0" step="0.01" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="descuento" class="form-label">Descuento (%):</label>
+                            <input type="number" name="descuento" id="descuento" class="form-control" min="0" max="100" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Subtotal:</label>
+                        <div class="form-control-plaintext" id="subtotalPreview">0.00 €</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="submit" form="lineForm" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extrajs %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $(document).ready(function() {
+            // Mejorar los selectores con Select2
+            $('#{{ form.cliente.id_for_label }}').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Seleccione un cliente...',
+                width: '100%'
+            });
+            
+            $('#{{ form.estado.id_for_label }}, #{{ form.forma_pago.id_for_label }}').select2({
+                theme: 'bootstrap-5',
+                minimumResultsForSearch: Infinity,
+                width: '100%'
+            });
+            
+            // Inicializar datepicker
+            $('#{{ form.fecha.id_for_label }}').flatpickr({
+                dateFormat: "Y-m-d",
+                locale: "es",
+                defaultDate: "today",
+                allowInput: true
+            });
+            
+            // Aplicar estilo a los campos de texto
+            $('textarea').addClass('form-control');
+            
+            {% if is_edit %}
+            // Cargar productos con Select2 AJAX
+            $('#producto').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Buscar producto...',
+                ajax: {
+                    url: '{% url "api:productos_search" %}',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return {
+                            q: params.term,
+                            page: params.page || 1
+                        };
+                    },
+                    processResults: function(data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.items,
+                            pagination: {
+                                more: data.more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                escapeMarkup: function(markup) { return markup; },
+                minimumInputLength: 2,
+                templateResult: formatProducto,
+                templateSelection: formatProductoSelection
+            });
+            
+            function formatProducto(producto) {
+                if (producto.loading) return producto.text;
+                return '<div class="select2-result-producto">' + 
+                       '<div class="select2-result-producto__name">' + producto.codigo + ' - ' + producto.nombre + '</div>' +
+                       '<div class="select2-result-producto__price">' + producto.precio + ' €</div>' +
+                       '</div>';
+            }
+            
+            function formatProductoSelection(producto) {
+                return producto.codigo ? producto.codigo + ' - ' + producto.nombre : producto.text;
+            }
+            
+            // Calcular subtotal en tiempo real
+            $('#cantidad, #precio, #descuento').on('input', calcularSubtotal);
+            
+            function calcularSubtotal() {
+                var cantidad = parseFloat($('#cantidad').val()) || 0;
+                var precio = parseFloat($('#precio').val()) || 0;
+                var descuento = parseFloat($('#descuento').val()) || 0;
+                
+                var subtotal = cantidad * precio * (1 - descuento/100);
+                $('#subtotalPreview').text(subtotal.toFixed(2) + ' €');
+            }
+            
+            // Rellenar campos al seleccionar producto
+            $('#producto').on('select2:select', function(e) {
+                var data = e.params.data;
+                $('#precio').val(data.precio);
+                $('#descripcion').val(data.nombre);
+                calcularSubtotal();
+            });
+            
+            // Editar línea
+            $('.edit-line').click(function() {
+                var id = $(this).data('id');
+                var producto = $(this).data('producto');
+                var descripcion = $(this).data('descripcion');
+                var cantidad = $(this).data('cantidad');
+                var precio = $(this).data('precio');
+                var descuento = $(this).data('descuento');
+                
+                $('#line_id').val(id);
+                
+                // Crear una opción para el producto y seleccionarla
+                var option = new Option(producto, producto, true, true);
+                $('#producto').append(option).trigger('change');
+                
+                $('#descripcion').val(descripcion);
+                $('#cantidad').val(cantidad);
+                $('#precio').val(precio);
+                $('#descuento').val(descuento);
+                calcularSubtotal();
+                
+                $('#addLineModalLabel').text('Editar línea');
+                $('#addLineModal').modal('show');
+            });
+            
+            // Resetear el formulario al cerrar el modal
+            $('#addLineModal').on('hidden.bs.modal', function() {
+                $('#lineForm')[0].reset();
+                $('#line_id').val('');
+                $('#producto').val(null).trigger('change');
+                $('#addLineModalLabel').text('Añadir línea');
+            });
+            
+            // Eliminar línea
+            $('.delete-line').click(function(e) {
+                e.preventDefault();
+                if (confirm('¿Está seguro de eliminar esta línea?')) {
+                    var lineId = $(this).data('id');
+                    fetch('{% url "ventas:presupuesto_delete_line" pk=presupuesto.pk %}?line_id=' + lineId, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        }
+                    }).then(function(response) {
+                        if (response.ok) {
+                            location.reload();
+                        } else {
+                            alert('Error al eliminar la línea');
+                        }
+                    });
+                }
+            });
+            {% endif %}
+        });
+    });
+</script>
+{% endblock %}

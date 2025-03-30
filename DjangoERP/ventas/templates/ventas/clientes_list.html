@@ -1,0 +1,601 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2>Listado de Clientes</h2>
+    </div>
+    <div class="col-md-6 text-end">
+        <button type="button" class="btn btn-primary btn-crear-cliente" onclick="safeOpenCreateModal()">
+            <i class="fas fa-plus"></i> Nuevo Cliente
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        {% if 'nif' in existing_columns %}<th>NIF/CIF</th>{% endif %}
+                        {% if 'ciudad' in existing_columns %}<th>Ciudad</th>{% endif %}
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cliente-table-body">
+                    {% for cliente in clientes %}
+                    <tr id="cliente-row-{{ cliente.id }}">
+                        <td>{{ cliente.id }}</td>
+                        <td>{{ cliente.nombre }}</td>
+                        <td>{{ cliente.apellido }}</td>
+                        <td>{{ cliente.email }}</td>
+                        <td>{{ cliente.telefono }}</td>
+                        {% if 'nif' in existing_columns %}<td>{{ cliente.nif|default:'' }}</td>{% endif %}
+                        {% if 'ciudad' in existing_columns %}<td>{{ cliente.ciudad|default:'' }}</td>{% endif %}
+                        <td>
+                            <button class="btn btn-sm btn-info btn-ver-cliente" data-id="{{ cliente.id }}">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger btn-eliminar-cliente" data-id="{{ cliente.id }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="{% if 'nif' in existing_columns and 'ciudad' in existing_columns %}8{% elif 'nif' in existing_columns or 'ciudad' in existing_columns %}7{% else %}6{% endif %}" class="text-center">No hay clientes registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Modal para Crear/Editar Cliente -->
+<div class="modal fade" id="clienteModal" tabindex="-1" aria-labelledby="clienteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clienteModalLabel">Nuevo Cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="clienteForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="cliente_id">
+                    
+                    <!-- Pestañas de navegación -->
+                    <ul class="nav nav-tabs mb-3" id="clienteFormTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="datos-basicos-tab" data-bs-toggle="tab" 
+                                data-bs-target="#datos-basicos" type="button" role="tab" 
+                                aria-controls="datos-basicos" aria-selected="true">
+                                Datos Básicos
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="datos-adicionales-tab" data-bs-toggle="tab" 
+                                data-bs-target="#datos-adicionales" type="button" role="tab" 
+                                aria-controls="datos-adicionales" aria-selected="false">
+                                Datos Adicionales
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <!-- Contenido de las pestañas -->
+                    <div class="tab-content" id="clienteFormTabsContent">
+                        <!-- Pestaña de Datos Básicos -->
+                        <div class="tab-pane fade show active" id="datos-basicos" role="tabpanel" 
+                             aria-labelledby="datos-basicos-tab">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_nombre" class="form-label">Nombre<span class="text-danger">*</span></label>
+                                    {{ form.nombre }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_apellido" class="form-label">Apellido</label>
+                                    {{ form.apellido }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_email" class="form-label">Email<span class="text-danger">*</span></label>
+                                    {{ form.email }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_telefono" class="form-label">Teléfono<span class="text-danger">*</span></label>
+                                    {{ form.telefono }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_nif" class="form-label">NIF/CIF</label>
+                                    {{ form.nif }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_tipo_cliente" class="form-label">Tipo de Cliente</label>
+                                    <select class="form-select" id="id_tipo_cliente" name="tipo_cliente">
+                                        <option value="particular">Particular</option>
+                                        <option value="empresa">Empresa</option>
+                                        <option value="autonomo">Autónomo</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pestaña de Datos Adicionales -->
+                        <div class="tab-pane fade" id="datos-adicionales" role="tabpanel" 
+                             aria-labelledby="datos-adicionales-tab">
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="id_direccion" class="form-label">Dirección</label>
+                                    {{ form.direccion }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="id_codigo_postal" class="form-label">Código Postal</label>
+                                    {{ form.codigo_postal }}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="id_ciudad" class="form-label">Ciudad</label>
+                                    <input type="text" class="form-control" id="id_ciudad" name="ciudad">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="id_provincia" class="form-label">Provincia</label>
+                                    <input type="text" class="form-control" id="id_provincia" name="provincia">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_pais" class="form-label">País</label>
+                                    <input type="text" class="form-control" id="id_pais" name="pais" value="España">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_telefono_secundario" class="form-label">Teléfono Secundario</label>
+                                    <input type="tel" class="form-control" id="id_telefono_secundario" name="telefono_secundario">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="id_sitio_web" class="form-label">Sitio Web</label>
+                                    <input type="url" class="form-control" id="id_sitio_web" name="sitio_web">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="id_notas" class="form-label">Notas</label>
+                                    <textarea class="form-control" id="id_notas" name="notas" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-warning" id="editModeBtn" style="display:none;">Habilitar Edición</button>
+                <button type="button" class="btn btn-primary" id="saveBtn" style="display:none;">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Confirmar Eliminación -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea eliminar este cliente?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentClienteId = null;
+    let editMode = false;
+
+    function openCreateModal() {
+        console.log('Abriendo modal de creación');
+        $('#clienteModalLabel').text('Nuevo Cliente');
+
+        if ($('#clienteForm').length) {
+            $('#clienteForm')[0].reset();
+        } else {
+            console.error('El formulario #clienteForm no se encontró');
+        }
+        $('#cliente_id').val('');
+        const modal = new bootstrap.Modal(document.getElementById('clienteModal'));
+        modal.show();
+        console.log('Modal de creación mostrado');
+    }
+
+    function safeOpenCreateModal() {
+        if ($('#clienteForm').length) {
+            openCreateModal();
+        } else {
+            console.error('El formulario #clienteForm no se encontró. No se puede abrir el modal.');
+        }
+    }
+
+    function addClienteRow(cliente) {
+        console.log('Añadiendo nuevo cliente a la tabla:', cliente);
+        
+        // Determine how many columns we have in the table header
+        const numColumns = $('#cliente-table-body').closest('table').find('th').length;
+        
+        let newRow = `
+            <tr id="cliente-row-${cliente.id}">
+                <td>${cliente.id}</td>
+                <td>${cliente.nombre}</td>
+                <td>${cliente.apellido}</td>
+                <td>${cliente.email}</td>
+                <td>${cliente.telefono}</td>`;
+                
+        // Check if we're displaying NIF column
+        if (numColumns > 6) {
+            newRow += `<td>${cliente.nif || ''}</td>`;
+        }
+        
+        // Check if we're displaying Ciudad column
+        if (numColumns > 7) {
+            newRow += `<td>${cliente.ciudad || ''}</td>`;
+        }
+        
+        newRow += `
+                <td>
+                    <button class="btn btn-sm btn-info btn-ver-cliente" data-id="${cliente.id}">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger btn-eliminar-cliente" data-id="${cliente.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+        
+        // Si la tabla está vacía, reemplazar el mensaje "No hay clientes"
+        if ($('#cliente-table-body tr td').length === 1 && 
+            $('#cliente-table-body tr td').text().includes('No hay clientes')) {
+            $('#cliente-table-body').html(newRow);
+        } else {
+            // Agregar al principio de la tabla para mostrar el más reciente
+            $('#cliente-table-body').prepend(newRow);
+        }
+    }
+    
+    function updateClienteRow(cliente) {
+        console.log('Actualizando fila de cliente:', cliente);
+        
+        // Determine how many columns we have in the table header
+        const numColumns = $('#cliente-table-body').closest('table').find('th').length;
+        
+        let updatedRow = `
+            <td>${cliente.id}</td>
+            <td>${cliente.nombre}</td>
+            <td>${cliente.apellido}</td>
+            <td>${cliente.email}</td>
+            <td>${cliente.telefono}</td>`;
+            
+        // Check if we're displaying NIF column
+        if (numColumns > 6) {
+            updatedRow += `<td>${cliente.nif || ''}</td>`;
+        }
+        
+        // Check if we're displaying Ciudad column
+        if (numColumns > 7) {
+            updatedRow += `<td>${cliente.ciudad || ''}</td>`;
+        }
+        
+        updatedRow += `
+            <td>
+                <button class="btn btn-sm btn-info btn-ver-cliente" data-id="${cliente.id}">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-danger btn-eliminar-cliente" data-id="${cliente.id}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        
+        $(`#cliente-row-${cliente.id}`).html(updatedRow);
+    }
+
+    function openViewModal(clienteId) {
+        console.log('Iniciando openViewModal para cliente con ID:', clienteId);
+        $('#clienteModalLabel').text('Detalles del Cliente');
+        
+        if ($('#clienteForm').length) {
+            console.log('Formulario encontrado, reseteando...');
+            $('#clienteForm')[0].reset();
+        } else {
+            console.error('El formulario #clienteForm no se encontró en openViewModal');
+            return;
+        }
+        
+        $('#cliente_id').val(clienteId);
+        console.log('Cliente ID establecido en el formulario:', clienteId);
+        
+        // Set initial view mode (not edit mode)
+        editMode = false;
+        
+        // Usar el endpoint de GET correcto para obtener los datos del cliente
+        $.ajax({
+            url: `/ventas/clientes/${clienteId}/`,
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                console.log('Cliente data obtenido:', data);
+                populateForm(data);
+                
+                // Configure modal for view mode
+                setFormReadOnly(true);
+                $('#editModeBtn').show();
+                $('#saveBtn').hide();
+                
+                $('#clienteModal').modal('show');
+            },
+            error: function(xhr) {
+                console.error('Error obteniendo datos del cliente:', xhr.status);
+                alert('Error al cargar el cliente.');
+            }
+        });
+    }
+
+    // Función para configurar el modo de solo lectura de los campos del formulario
+    function setFormReadOnly(readOnly) {
+        $('#clienteForm input, #clienteForm select, #clienteForm textarea').each(function() {
+            $(this).prop('readonly', readOnly);
+            $(this).prop('disabled', readOnly);
+            
+            // Aplicar clase visual para formularios de solo lectura si está en modo lectura
+            if (readOnly) {
+                $(this).addClass('form-control-plaintext').removeClass('form-control');
+            } else {
+                $(this).addClass('form-control').removeClass('form-control-plaintext');
+            }
+        });
+        
+        // El campo id_cliente no debe ser editable nunca
+        $('#cliente_id').prop('readonly', true).prop('disabled', true);
+    }
+    
+    // Toggle entre modo vista y edición
+    function toggleEditMode() {
+        editMode = !editMode;
+        
+        if (editMode) {
+            // Cambiar a modo edición
+            setFormReadOnly(false);
+            $('#editModeBtn').text('Cancelar Edición').removeClass('btn-warning').addClass('btn-secondary');
+            $('#saveBtn').show();
+        } else {
+            // Volver a modo vista
+            setFormReadOnly(true);
+            $('#editModeBtn').text('Habilitar Edición').removeClass('btn-secondary').addClass('btn-warning');
+            $('#saveBtn').hide();
+            
+            // Re-cargar los datos originales para deshacer cambios
+            const clienteId = $('#cliente_id').val();
+            if (clienteId) {
+                $.ajax({
+                    url: `/ventas/clientes/${clienteId}/`,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        populateForm(data);
+                    }
+                });
+            }
+        }
+    }
+
+    // Mejoramos la función para cerrar el modal correctamente
+    function closeModal(modalId) {
+        // Obtenemos la instancia del modal
+        const modalElement = document.getElementById(modalId);
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+        
+        // Limpiamos manualmente el backdrop si persiste
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
+        
+        // Quitamos la clase modal-open del body
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+        
+        // Reseteamos el estado del modal para la próxima vez que se abra
+        if (modalId === 'clienteModal') {
+            resetModalState();
+        }
+    }
+    
+    // Nueva función para resetear el estado del modal
+    function resetModalState() {
+        // Resetear el modo de edición
+        editMode = false;
+        
+        // Resetear la visibilidad de los botones
+        $('#editModeBtn').text('Habilitar Edición').removeClass('btn-secondary').addClass('btn-warning');
+        $('#saveBtn').hide();
+    }
+
+    // Función auxiliar para poblar el formulario
+    function populateForm(data) {
+        console.log('Populando formulario con datos:', data);
+        
+        // Mapeo de campos
+        if ($('#id_nombre').length) $('#id_nombre').val(data.nombre || '');
+        if ($('#id_apellido').length) $('#id_apellido').val(data.apellido || '');
+        if ($('#id_email').length) $('#id_email').val(data.email || '');
+        if ($('#id_telefono').length) $('#id_telefono').val(data.telefono || '');
+        if ($('#id_direccion').length) $('#id_direccion').val(data.direccion || '');
+        if ($('#id_nif').length) $('#id_nif').val(data.nif || '');
+        if ($('#id_codigo_postal').length) $('#id_codigo_postal').val(data.codigo_postal || '');
+        if ($('#id_ciudad').length) $('#id_ciudad').val(data.ciudad || '');
+        if ($('#id_provincia').length) $('#id_provincia').val(data.provincia || '');
+        if ($('#id_pais').length) $('#id_pais').val(data.pais || 'España');
+        if ($('#id_telefono_secundario').length) $('#id_telefono_secundario').val(data.telefono_secundario || '');
+        if ($('#id_sitio_web').length) $('#id_sitio_web').val(data.sitio_web || '');
+        if ($('#id_notas').length) $('#id_notas').val(data.notas || '');
+        if ($('#id_tipo_cliente').length) $('#id_tipo_cliente').val(data.tipo_cliente || 'particular');
+    }
+
+    $(document).ready(function() {
+        console.log('Inicializando componentes...');
+        
+        // Usar delegación de eventos para botones de ver (para que funcione con filas añadidas dinámicamente)
+        $(document).on('click', '.btn-ver-cliente', function(e) {
+            e.preventDefault();
+            const clienteId = $(this).data('id');
+            console.log('Botón ver cliente clickeado para ID:', clienteId);
+            if (clienteId) {
+                openViewModal(clienteId);
+            } else {
+                console.error('El botón de ver no tiene un data-id válido');
+            }
+        });
+
+        $(document).on('click', '.btn-eliminar-cliente', function(e) {
+            e.preventDefault();
+            const clienteId = $(this).data('id');
+            console.log('Botón eliminar cliente clickeado para ID:', clienteId);
+            if (clienteId) {
+                currentClienteId = clienteId;
+                $('#deleteModal').modal('show');
+            } else {
+                console.error('El botón de eliminar no tiene un data-id válido');
+            }
+        });
+        
+        // Evento crear cliente - ahora debe iniciar en modo edición
+        $('.btn-crear-cliente').on('click', function(e) {
+            e.preventDefault();
+            console.log('Botón crear cliente clickeado');
+            safeOpenCreateModal();
+            
+            // Configurar modal para modo edición (nuevo cliente siempre en modo edición)
+            editMode = true;
+            setFormReadOnly(false);
+            $('#editModeBtn').hide(); // No mostrar botón de edición en nuevo cliente
+            $('#saveBtn').show();
+        });
+
+        // Evento guardar - Actualizar para usar nuestra función closeModal
+        $('#saveBtn').on('click', function() {
+            const clienteId = $('#cliente_id').val();
+            const formData = $('#clienteForm').serialize();
+            console.log('Inicio de guardado. ID:', clienteId);
+            console.log('Datos enviados:', formData);
+            
+            if (clienteId) {
+                // Changed update URL to target the update endpoint instead of edit
+                let updateUrl = `/ventas/clientes/${clienteId}/update/`;
+                console.log('Realizando actualización con URL:', updateUrl);
+                $.ajax({
+                    url: updateUrl,
+                    type: 'POST',
+                    data: formData,
+                    beforeSend: function() {
+                        console.log('Enviando petición de actualización...');
+                    },
+                    success: function(data) {
+                        console.log('Actualización exitosa. Datos recibidos:', data);
+                        updateClienteRow(data);
+                        resetModalState(); // Resetear el estado del modal antes de cerrarlo
+                        closeModal('clienteModal');
+                    },
+                    error: function(xhr) {
+                        console.error('Error al actualizar. Estado:', xhr.status, 'Respuesta:', xhr.responseText);
+                        alert('Error al actualizar: ' + xhr.responseText);
+                    }
+                });
+            } else {
+                console.log('Realizando creación');
+                $.ajax({
+                    url: `/ventas/clientes/create/`,
+                    type: 'POST',
+                    data: formData,
+                    beforeSend: function() {
+                        console.log('Enviando petición de creación...');
+                    },
+                    success: function(data) {
+                        console.log('Creación exitosa. Datos recibidos:', data);
+                        addClienteRow(data);
+                        closeModal('clienteModal');
+                    },
+                    error: function(xhr) {
+                        console.error('Error en creación. Estado:', xhr.status, 'Respuesta:', xhr.responseText);
+                        alert('Error al crear el cliente: ' + xhr.responseText);
+                    }
+                });
+            }
+        });
+
+        // Manejar el evento de eliminar - También actualizar para usar closeModal
+        $('#confirmDeleteBtn').on('click', function() {
+            if (currentClienteId) {
+                $.ajax({
+                    url: `/ventas/clientes/${currentClienteId}/delete/`,
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        console.log('Cliente eliminado exitosamente');
+                        $(`#cliente-row-${currentClienteId}`).remove();
+                        closeModal('deleteModal'); // Usar nuestra función
+                        
+                        // Verificar si la tabla quedó vacía
+                        if ($('#cliente-table-body tr').length === 0) {
+                            $('#cliente-table-body').html('<tr><td colspan="8" class="text-center">No hay clientes registrados.</td></tr>');
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Error al eliminar el cliente:', xhr);
+                        alert('Error al eliminar el cliente');
+                    }
+                });
+            }
+        });
+        
+        // También agregamos handlers para los botones cancelar
+        $(document).on('click', '[data-bs-dismiss="modal"]', function() {
+            const modalId = $(this).closest('.modal').attr('id');
+            closeModal(modalId);
+        });
+
+        // Evento para habilitar/deshabilitar modo edición
+        $('#editModeBtn').on('click', function() {
+            toggleEditMode();
+        });
+    });
+</script>
+{% endblock %}

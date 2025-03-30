@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="card mt-4">
+          <div class="card-header text-center">
+            <h2>Eliminar Cuenta</h2>
+          </div>
+          <div class="card-body">
+            <p>¿Está seguro que desea eliminar la cuenta <strong>{{ cuenta.codigo }} - {{ cuenta.nombre }}</strong>?</p>
+            <form method="post">
+              {% csrf_token %}
+              <div class="text-center">
+                <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                <a href="{% url 'contabilidad:cuentas_list' %}" class="btn btn-secondary">Cancelar</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

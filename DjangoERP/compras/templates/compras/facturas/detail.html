@@ -1,0 +1,93 @@
+{% extends "compras/base.html" %}
+
+{% block compras_content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4>Factura de Compra #{{ factura.numero }}</h4>
+        <div>
+            {% if not factura.pagada %}
+            <a href="{% url 'compras:factura_marcar_pagada' factura.id %}" class="btn btn-success">Marcar como Pagada</a>
+            {% endif %}
+            <a href="{% url 'compras:factura_edit' factura.id %}" class="btn btn-warning">Editar</a>
+            <a href="{% url 'compras:facturas_list' %}" class="btn btn-secondary">Volver</a>
+            {% if factura.archivo %}
+            <a href="{{ factura.archivo.url }}" class="btn btn-primary" target="_blank">
+                <i class="bi bi-file-earmark"></i> Ver Documento
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h5>Información de la Factura</h5>
+                <p><strong>Número:</strong> {{ factura.numero }}</p>
+                <p><strong>Fecha:</strong> {{ factura.fecha|date:"d/m/Y" }}</p>
+                <p><strong>Fecha de Vencimiento:</strong> {{ factura.fecha_vencimiento|date:"d/m/Y" }}</p>
+                <p><strong>Estado:</strong> 
+                    <span class="badge {% if factura.pagada %}bg-success{% else %}bg-warning{% endif %}">
+                        {% if factura.pagada %}Pagada{% else %}Pendiente{% endif %}
+                    </span>
+                </p>
+                <p><strong>Total:</strong> ${{ factura.total|floatformat:2 }}</p>
+            </div>
+            <div class="col-md-6">
+                <h5>Información del Proveedor</h5>
+                <p><strong>Proveedor:</strong> {{ factura.proveedor.nombre }}</p>
+                <p><strong>RUC/NIT:</strong> {{ factura.proveedor.ruc }}</p>
+                <p><strong>Teléfono:</strong> {{ factura.proveedor.telefono }}</p>
+                {% if factura.orden %}
+                <p><strong>Orden de Compra:</strong> <a href="{% url 'compras:orden_detail' factura.orden.id %}">{{ factura.orden.numero }}</a></p>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if factura.observaciones %}
+        <div class="mb-4">
+            <h5>Observaciones</h5>
+            <p>{{ factura.observaciones }}</p>
+        </div>
+        {% endif %}
+        
+        {% if pagos %}
+        <h5>Historial de Pagos</h5>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Monto</th>
+                    <th>Método de Pago</th>
+                    <th>Referencia</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pago in pagos %}
+                <tr>
+                    <td>{{ pago.fecha|date:"d/m/Y" }}</td>
+                    <td>${{ pago.monto|floatformat:2 }}</td>
+                    <td>{{ pago.get_metodo_display }}</td>
+                    <td>{{ pago.referencia }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="3" class="text-end">Total Pagado:</th>
+                    <th>${{ total_pagado|floatformat:2 }}</th>
+                </tr>
+                <tr>
+                    <th colspan="3" class="text-end">Saldo Pendiente:</th>
+                    <th>${{ saldo_pendiente|floatformat:2 }}</th>
+                </tr>
+            </tfoot>
+        </table>
+        {% endif %}
+        
+        {% if not factura.pagada %}
+        <div class="mt-4">
+            <a href="{% url 'compras:pago_create' factura.id %}" class="btn btn-primary">Registrar Pago</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

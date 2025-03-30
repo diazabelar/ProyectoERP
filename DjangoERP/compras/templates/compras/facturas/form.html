@@ -1,0 +1,113 @@
+{% extends "compras/base.html" %}
+
+{% block compras_content %}
+<div class="card">
+    <div class="card-header">
+        <h4>{% if object %}Editar{% else %}Nueva{% endif %} Factura de Compra</h4>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="{{ form.numero.id_for_label }}">Número de Factura:</label>
+                        {{ form.numero|addclass:"form-control" }}
+                        {% if form.numero.errors %}
+                        <div class="text-danger">{{ form.numero.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="{{ form.fecha.id_for_label }}">Fecha:</label>
+                        {{ form.fecha|addclass:"form-control" }}
+                        {% if form.fecha.errors %}
+                        <div class="text-danger">{{ form.fecha.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="{{ form.fecha_vencimiento.id_for_label }}">Fecha de Vencimiento:</label>
+                        {{ form.fecha_vencimiento|addclass:"form-control" }}
+                        {% if form.fecha_vencimiento.errors %}
+                        <div class="text-danger">{{ form.fecha_vencimiento.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.proveedor.id_for_label }}">Proveedor:</label>
+                        {{ form.proveedor|addclass:"form-control" }}
+                        {% if form.proveedor.errors %}
+                        <div class="text-danger">{{ form.proveedor.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.orden.id_for_label }}">Orden de Compra (opcional):</label>
+                        {{ form.orden|addclass:"form-control" }}
+                        {% if form.orden.errors %}
+                        <div class="text-danger">{{ form.orden.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.total.id_for_label }}">Total:</label>
+                        {{ form.total|addclass:"form-control" }}
+                        {% if form.total.errors %}
+                        <div class="text-danger">{{ form.total.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="{{ form.pagada.id_for_label }}">Estado:</label>
+                        <div class="form-check mt-2">
+                            {{ form.pagada|addclass:"form-check-input" }}
+                            <label class="form-check-label" for="{{ form.pagada.id_for_label }}">Pagada</label>
+                        </div>
+                        {% if form.pagada.errors %}
+                        <div class="text-danger">{{ form.pagada.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label for="{{ form.observaciones.id_for_label }}">Observaciones:</label>
+                {{ form.observaciones|addclass:"form-control" }}
+                {% if form.observaciones.errors %}
+                <div class="text-danger">{{ form.observaciones.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group mb-3">
+                <label for="{{ form.archivo.id_for_label }}">Archivo de Factura:</label>
+                {{ form.archivo|addclass:"form-control" }}
+                {% if form.archivo.errors %}
+                <div class="text-danger">{{ form.archivo.errors }}</div>
+                {% endif %}
+                {% if object and object.archivo %}
+                <p class="mt-2">Archivo actual: <a href="{{ object.archivo.url }}" target="_blank">{{ object.archivo.name }}</a></p>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="{% url 'compras:facturas_list' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

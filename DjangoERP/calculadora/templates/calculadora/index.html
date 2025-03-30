@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Calculadora{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Calculadora</h1>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Calculadora Financiera
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Realice cálculos financieros como interés compuesto, amortizaciones, etc.</p>
+                    <a href="{% url 'calculadora:financiera' %}" class="btn btn-primary">Utilizar</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Conversor de Divisas
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Convierta importes entre diferentes monedas con tasas actualizadas.</p>
+                    <a href="{% url 'calculadora:divisas' %}" class="btn btn-primary">Utilizar</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    Calculadora de Impuestos
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Calcule impuestos para sus operaciones y facturas.</p>
+                    <a href="{% url 'calculadora:impuestos' %}" class="btn btn-primary">Utilizar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

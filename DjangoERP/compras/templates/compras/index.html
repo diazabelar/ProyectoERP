@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Compras{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Gestión de Compras</h1>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Bienvenido al módulo de Compras</h5>
+                    <p class="card-text">Aquí puedes gestionar todo lo relacionado con tus Compras.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Proveedores</h5>
+                    <p class="card-text">Administra tu catálogo de proveedores.</p>
+                    <a href="{% url 'compras:proveedores' %}" class="btn btn-primary">Gestionar Proveedores</a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Órdenes de Compra</h5>
+                    <p class="card-text">Crea y gestiona órdenes de compra.</p>
+                    <a href="{% url 'compras:compras' %}" class="btn btn-primary">Administrar Órdenes</a>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Facturas</h5>
+                    <p class="card-text">Administra facturas de proveedores.</p>
+                    <a href="{% url 'compras:facturas' %}" class="btn btn-primary">Gestionar Facturas</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
