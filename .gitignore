@@ -42,5 +42,7 @@ ENV/
 
 # Archivos de configuración con información sensible
 .env
-admingithub.txt
-git_instructions.sh
+contexto.md
+qwerty.md
+
+
