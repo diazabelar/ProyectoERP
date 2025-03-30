@@ -40,7 +40,7 @@ ENV/
 *.swp
 *.swo
 
-# Archivos de configuración con información sensible
+# Archivos de configuración con
 .env
-admingithub.txt
-git_instructions.sh
+contexto.md
+qwerty.md
