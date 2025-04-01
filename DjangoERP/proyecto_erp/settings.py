@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     'hoja_calculo',
     'notas',
     'core',  # Add the 'core' app
-    'billing', # Add the 'billing' app
 ]
 
 MIDDLEWARE = [

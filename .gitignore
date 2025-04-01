@@ -40,9 +40,9 @@ ENV/
 *.swp
 *.swo
 
-# Archivos de configuración con información sensible
+# Archivos de configuración
 .env
 contexto.md
 qwerty.md
-
+telegram_bot/
 

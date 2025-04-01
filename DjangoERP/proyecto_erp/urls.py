@@ -27,7 +27,7 @@ urlpatterns = [
     path('calculadora/', include('calculadora.urls', namespace='calculadora')),
     path('hoja_calculo/', include('hoja_calculo.urls', namespace='hoja_calculo')),
     path('notas/', include('notas.urls', namespace='notas')),
-    path('billing/', include('billing.urls', namespace='billing')),
+    # path('billing/', include('billing.urls', namespace='billing')),  # Commented out as the module does not exist
     
     # Use Django's built-in login view but with the correct redirect
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
