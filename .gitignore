@@ -44,3 +44,4 @@ ENV/
 .env
 contexto.md
 qwerty.md
+telegram_bot/
